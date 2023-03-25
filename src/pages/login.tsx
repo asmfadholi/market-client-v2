@@ -12,6 +12,7 @@ import carImage from "../assets/images/car.jpeg";
 import { SxProps, Theme } from "@mui/material";
 import axios from "axios";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
+import { useRouter } from "next/router";
 
 function Copyright({ sx }: { sx: SxProps<Theme> }) {
   return (
@@ -61,6 +62,7 @@ interface SaveJwtResponse {
 }
 
 export default function SignInSide() {
+  const router = useRouter();
   const { setShowSnackbar } = useSnackbarActions();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -86,6 +88,7 @@ export default function SignInSide() {
         message: messageSuccess,
         type: "success",
       });
+      router.replace("/");
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const getDataError = err.response?.data as LoginError;
