@@ -8,14 +8,15 @@ import SnackbarProvider from "@/contexts/snackbarContext";
 import Drawer from "@/_shared/Drawer";
 import { Box } from "@mui/material";
 import axios from "axios";
+import AuthProvider from "@/contexts/authContext";
+import { useRouter } from "next/router";
 
-function App({
-  Component,
-  pageProps,
-  detailUser,
-}: AppProps & { detailUser: UserDetail }) {
+function App({ Component, pageProps }: AppProps) {
   const { isDark } = useThemeStates();
-  const Layout = detailUser.id ? Drawer : Box;
+
+  const { pathname } = useRouter();
+  const isLoginPage = pathname === "/login";
+  const Layout = !isLoginPage ? Drawer : Box;
 
   return (
     <ThemeProvider theme={generateTheme(isDark)}>
@@ -32,9 +33,11 @@ export default function WrapperApp(
 ) {
   return (
     <ThemeProviderContext>
-      <SnackbarProvider>
-        <App {...props} />
-      </SnackbarProvider>
+      <AuthProvider initDetailUser={props.detailUser}>
+        <SnackbarProvider>
+          <App {...props} />
+        </SnackbarProvider>
+      </AuthProvider>
     </ThemeProviderContext>
   );
 }
@@ -50,6 +53,7 @@ interface UserDetail {
   blocked: boolean;
   createdAt: string;
   updatedAt: string;
+  jwt: string;
 }
 
 WrapperApp.getInitialProps = async (appContext: AppContext) => {
@@ -57,9 +61,10 @@ WrapperApp.getInitialProps = async (appContext: AppContext) => {
   try {
     const { ctx } = appContext;
     const { req } = ctx;
+    const host = ctx.req?.headers.host;
     const httpHost = `http://${ctx.req?.headers.host}`;
     const resGetJwt = await axios.get<{ jwt: string }>(
-      `${httpHost}/api/get-jwt-cookie`,
+      `${host ? httpHost : ""}/api/get-jwt-cookie`,
       {
         headers: {
           cookie: req?.headers.cookie,
@@ -76,7 +81,7 @@ WrapperApp.getInitialProps = async (appContext: AppContext) => {
 
     return {
       ...appProps,
-      detailUser: resGetDetailUser.data,
+      detailUser: { ...resGetDetailUser.data, jwt: getJwt },
     };
   } catch {
     // failed to get detail and return as non login user
@@ -91,6 +96,7 @@ WrapperApp.getInitialProps = async (appContext: AppContext) => {
         blocked: false,
         createdAt: "",
         updatedAt: "",
+        jwt: "",
       },
     };
   }

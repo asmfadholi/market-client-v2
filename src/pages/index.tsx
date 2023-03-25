@@ -13,8 +13,6 @@ import {
 } from "@mui/material";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-
-import Drawer from "../_shared/Drawer";
 import { useThemeActions, useThemeStates } from "@/contexts/themeContext";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -44,73 +42,71 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box>
-        <Drawer>
-          <Box marginBottom="24px">
-            <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
-              Button
-            </Typography>
+        <Box marginBottom="24px">
+          <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
+            Button
+          </Typography>
 
-            <Stack direction="row" spacing={2}>
-              <Button variant="text">Text</Button>
-              <Button variant="contained">Contained</Button>
-              <Button variant="outlined">Outlined</Button>
-            </Stack>
-          </Box>
+          <Stack direction="row" spacing={2}>
+            <Button variant="text">Text</Button>
+            <Button variant="contained">Contained</Button>
+            <Button variant="outlined">Outlined</Button>
+          </Stack>
+        </Box>
 
-          <Divider />
+        <Divider />
 
-          <Box margin="24px 0 24px 0">
-            <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
-              Checkbox
-            </Typography>
+        <Box margin="24px 0 24px 0">
+          <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
+            Checkbox
+          </Typography>
 
-            <Checkbox {...label} defaultChecked />
-            <Checkbox {...label} />
-            <Checkbox {...label} disabled />
-            <Checkbox {...label} disabled checked />
-          </Box>
+          <Checkbox {...label} defaultChecked />
+          <Checkbox {...label} />
+          <Checkbox {...label} disabled />
+          <Checkbox {...label} disabled checked />
+        </Box>
 
-          <Divider />
+        <Divider />
 
-          <Box margin="24px 0 24px 0">
-            <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
-              Radio
-            </Typography>
+        <Box margin="24px 0 24px 0">
+          <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
+            Radio
+          </Typography>
 
-            <RadioGroup
-              row
-              aria-labelledby="demo-row-radio-buttons-group-label"
-              name="row-radio-buttons-group"
-            >
-              <FormControlLabel
-                value="female"
-                control={<Radio />}
-                label="Female"
-              />
-              <FormControlLabel value="male" control={<Radio />} label="Male" />
-              <FormControlLabel
-                value="disabled"
-                disabled
-                control={<Radio />}
-                label="Other"
-              />
-            </RadioGroup>
-          </Box>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+          >
+            <FormControlLabel
+              value="female"
+              control={<Radio />}
+              label="Female"
+            />
+            <FormControlLabel value="male" control={<Radio />} label="Male" />
+            <FormControlLabel
+              value="disabled"
+              disabled
+              control={<Radio />}
+              label="Other"
+            />
+          </RadioGroup>
+        </Box>
 
-          <Divider />
+        <Divider />
 
-          <Box margin="24px 0 24px 0">
-            <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
-              Mode
-            </Typography>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <IconButton onClick={toggleIsDark} color="inherit">
-                {dataMode[getPropertyMode].icon}
-              </IconButton>
-              <Typography>{dataMode[getPropertyMode].label}</Typography>
-            </Stack>
-          </Box>
-        </Drawer>
+        <Box margin="24px 0 24px 0">
+          <Typography margin="0 0 15px 0" variant="subtitle1" component="h2">
+            Mode
+          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <IconButton onClick={toggleIsDark} color="inherit">
+              {dataMode[getPropertyMode].icon}
+            </IconButton>
+            <Typography>{dataMode[getPropertyMode].label}</Typography>
+          </Stack>
+        </Box>
       </Box>
     </>
   );

@@ -1,4 +1,4 @@
-import { styled } from "@mui/material/styles";
+import { styled, SxProps, Theme } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 
 export const drawerWidth = 240;
@@ -53,3 +53,17 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: "flex-end",
 }));
+
+export const styLink: SxProps<Theme> = (theme) => ({
+  "& a": {
+    textDecoration: "unset",
+    color: "inherit",
+  },
+  "&.active": {
+    background: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    svg: {
+      color: theme.palette.common.white,
+    },
+  },
+});

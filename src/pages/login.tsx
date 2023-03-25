@@ -13,6 +13,7 @@ import { SxProps, Theme } from "@mui/material";
 import axios from "axios";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
 import { useRouter } from "next/router";
+import { useAuthActions } from "@/contexts/authContext";
 
 function Copyright({ sx }: { sx: SxProps<Theme> }) {
   return (
@@ -63,6 +64,7 @@ interface SaveJwtResponse {
 
 export default function SignInSide() {
   const [loadingLogin, setLoadingLogin] = React.useState(false);
+  const { refetchDetailUser } = useAuthActions();
   const router = useRouter();
   const { setShowSnackbar } = useSnackbarActions();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -89,6 +91,7 @@ export default function SignInSide() {
         message: messageSuccess,
         type: "success",
       });
+      await refetchDetailUser();
       router.replace("/");
     } catch (err) {
       if (axios.isAxiosError(err)) {

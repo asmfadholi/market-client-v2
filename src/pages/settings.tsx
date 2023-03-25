@@ -14,6 +14,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
 import { useRouter } from "next/router";
+import { useAuthActions } from "@/contexts/authContext";
 
 const dataMode = {
   dark: {
@@ -84,6 +85,7 @@ interface Error {
 
 export default function Settings() {
   const [loadingLogout, setLoadingLogout] = useState(false);
+  const { refetchDetailUser } = useAuthActions();
   const { isDark } = useThemeStates();
   const router = useRouter();
   const { setShowSnackbar } = useSnackbarActions();
@@ -99,6 +101,7 @@ export default function Settings() {
         message: resLogout.data?.message,
         type: "success",
       });
+      await refetchDetailUser();
       router.replace("/login");
     } catch (err) {
       if (axios.isAxiosError(err)) {
