@@ -12,9 +12,14 @@ async function authAccount(req: NextApiRequest, res: NextApiResponse) {
     const bodyData = req.body;
     req.session.jwt = bodyData.jwt;
     await req.session.save();
-    return res.status(200).send({ success: true });
+    return res.status(200).send({ success: true, message: "Login berhasil" });
   } catch {
-    return res.status(200).send({ success: false });
+    return res
+      .status(200)
+      .send({
+        success: false,
+        error: { message: "Login gagal, silahkan coba kembali!" },
+      });
   }
 }
 

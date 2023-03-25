@@ -2,6 +2,7 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "@mui/material/styles";
 import generateTheme from "@/assets/config/theme";
 import ThemeProviderContext, { useThemeStates } from "@/contexts/themeContext";
+import SnackbarProvider from "@/contexts/snackbarContext";
 
 function App({ Component, pageProps }: AppProps) {
   const { isDark } = useThemeStates();
@@ -16,7 +17,9 @@ function App({ Component, pageProps }: AppProps) {
 export default function WrapperApp(props: AppProps) {
   return (
     <ThemeProviderContext>
-      <App {...props} />
+      <SnackbarProvider>
+        <App {...props} />
+      </SnackbarProvider>
     </ThemeProviderContext>
   );
 }

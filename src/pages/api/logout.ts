@@ -8,7 +8,7 @@ async function logoutAccount(req: NextApiRequest, res: NextApiResponse) {
   } catch {
     return res.status(200).send({
       success: false,
-      message: "Logout gagal, silahkan coba kembali!",
+      error: { message: "Logout gagal, silahkan coba kembali!" },
     });
   }
 }
