@@ -6,7 +6,7 @@ async function logoutAccount(req: NextApiRequest, res: NextApiResponse) {
     await req.session.destroy();
     return res.status(200).send({ success: true, message: "Logout berhasil" });
   } catch {
-    return res.status(200).send({
+    return res.status(500).send({
       success: false,
       error: { message: "Logout gagal, silahkan coba kembali!" },
     });

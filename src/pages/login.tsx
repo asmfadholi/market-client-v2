@@ -27,7 +27,7 @@ function Copyright({ sx }: { sx: SxProps<Theme> }) {
   );
 }
 
-const LOGIN_URL = () => `${process.env.NEXT_PUBLIC_BASE_URL}/auth/local`;
+const LOGIN_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/local`;
 
 interface LoginError {
   data: null;
@@ -62,14 +62,15 @@ interface SaveJwtResponse {
 }
 
 export default function SignInSide() {
+  const [loadingLogin, setLoadingLogin] = React.useState(false);
   const router = useRouter();
   const { setShowSnackbar } = useSnackbarActions();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
+    setLoadingLogin(true);
     try {
-      const resLogin = await axios.post<LoginResponse>(LOGIN_URL(), {
+      const resLogin = await axios.post<LoginResponse>(LOGIN_URL, {
         identifier: data.get("username"),
         password: data.get("password"),
       });
@@ -98,6 +99,8 @@ export default function SignInSide() {
           type: "error",
         });
       }
+    } finally {
+      setLoadingLogin(false);
     }
   };
 
@@ -164,6 +167,7 @@ export default function SignInSide() {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={loadingLogin}
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
