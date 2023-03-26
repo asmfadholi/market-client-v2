@@ -16,13 +16,32 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import SettingsIcon from "@mui/icons-material/Settings";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 // styles
 import { AppBar, DrawerHeader, drawerWidth, Main, styLink } from "./styles";
 import { getLocalStorage, setLocalStorage } from "@/helpers/localStorage";
 import { useRouter } from "next/router";
+
+const MENUS = [
+  {
+    label: "Account",
+    icon: <ManageAccountsIcon />,
+    link: "/",
+  },
+  {
+    label: "Product",
+    icon: <InventoryIcon />,
+    link: "/product",
+  },
+  {
+    label: "Transaction",
+    icon: <PointOfSaleIcon />,
+    link: "/transaction",
+  },
+];
 
 export default function PersistentDrawerLeft({
   children,
@@ -60,7 +79,7 @@ export default function PersistentDrawerLeft({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Persistent drawer
+            Pazarin
           </Typography>
         </Toolbar>
       </AppBar>
@@ -88,15 +107,21 @@ export default function PersistentDrawerLeft({
         </DrawerHeader>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
+          {MENUS.map((menu) => (
+            <Box
+              key={menu.label}
+              sx={styLink}
+              className={router.pathname === menu.link ? "active" : ""}
+            >
+              <Link href={menu.link}>
+                <ListItem disablePadding>
+                  <ListItemButton>
+                    <ListItemIcon>{menu.icon}</ListItemIcon>
+                    <ListItemText primary={menu.label} />
+                  </ListItemButton>
+                </ListItem>
+              </Link>
+            </Box>
           ))}
         </List>
         <Divider />

@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 declare module "iron-session" {
   interface IronSessionData {
     jwt?: string;
+    userId?: number;
   }
 }
 
@@ -11,6 +12,7 @@ async function SetJwtCookie(req: NextApiRequest, res: NextApiResponse) {
   try {
     const bodyData = req.body;
     req.session.jwt = bodyData.jwt;
+    req.session.userId = bodyData.userId;
     await req.session.save();
     return res.status(200).send({ success: true, message: "Login berhasil" });
   } catch {

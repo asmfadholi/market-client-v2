@@ -5,6 +5,7 @@ import {
   useState,
   createContext,
   useCallback,
+  useEffect,
 } from "react";
 import { noop } from "@/helpers/noop";
 import axios from "axios";
@@ -57,10 +58,31 @@ const AuthProvider = ({
 }: PropsWithChildren<{ initDetailUser: UserDetail }>) => {
   const [detailUser, setDetailUser] = useState(initDetailUser);
 
+  useEffect(() => {
+    axios.interceptors.request.use(
+      (config) => {
+        const token = detailUser.jwt;
+        if (token) {
+          config.headers["Authorization"] = "Bearer " + token;
+        }
+
+        return config;
+      },
+      (error) => {
+        Promise.reject(error);
+      }
+    );
+  }, [detailUser.jwt]);
+
   const refetchDetailUser = useCallback(async () => {
     try {
       const resGetJwt = await axios.get<{ jwt: string }>("/api/get-jwt-cookie");
       const getJwt = resGetJwt.data.jwt;
+
+      if (!getJwt) {
+        setDetailUser(detailUserEmpty);
+        return;
+      }
 
       const resGetDetailUser = await axios.get<UserDetail>(USER_DETAIL_API, {
         headers: {

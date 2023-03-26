@@ -10,7 +10,10 @@ declare module "iron-session" {
 async function getJwtCookie(req: NextApiRequest, res: NextApiResponse) {
   try {
     const getJwt = req.session.jwt;
-    return res.status(200).send({ success: true, jwt: getJwt });
+    const getUserId = req.session.userId;
+    return res
+      .status(200)
+      .send({ success: true, jwt: getJwt, userId: getUserId });
   } catch {
     return res.status(500).send({
       success: false,

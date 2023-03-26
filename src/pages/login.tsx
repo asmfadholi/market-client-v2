@@ -28,7 +28,7 @@ function Copyright({ sx }: { sx: SxProps<Theme> }) {
   );
 }
 
-const LOGIN_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/local`;
+const LOGIN_API = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/local`;
 
 interface LoginError {
   data: null;
@@ -72,16 +72,18 @@ export default function SignInSide() {
     const data = new FormData(event.currentTarget);
     setLoadingLogin(true);
     try {
-      const resLogin = await axios.post<LoginResponse>(LOGIN_URL, {
+      const resLogin = await axios.post<LoginResponse>(LOGIN_API, {
         identifier: data.get("username"),
         password: data.get("password"),
       });
 
       const getJwt = resLogin.data.jwt;
+      const getUserId = resLogin?.data?.user?.id;
       const resSaveJwtCookie = await axios.post<SaveJwtResponse>(
         "/api/set-jwt-cookie",
         {
           jwt: getJwt,
+          userId: getUserId,
         }
       );
 

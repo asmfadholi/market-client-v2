@@ -73,7 +73,7 @@ WrapperApp.getInitialProps = async (appContext: AppContext) => {
     );
     const getJwt = resGetJwt.data.jwt;
 
-    const resGetDetailUser = await axios.get<UserDetail>(USER_DETAIL_API, {
+    const resGetDetailUser = await axios.get<UserDetail>(`${USER_DETAIL_API}`, {
       headers: {
         Authorization: `Bearer ${getJwt}`,
       },
