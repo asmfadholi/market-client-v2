@@ -11,8 +11,6 @@ export default function useAxios() {
         const token = detailUser.jwt;
         if (token) {
           config.headers["Authorization"] = "Bearer " + token;
-        } else {
-          config.headers["Authorization"] = undefined;
         }
 
         return config;

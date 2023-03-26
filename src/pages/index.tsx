@@ -71,7 +71,7 @@ export default function Home({
   const getAxios = useAxios();
   const [loadingUpdatePhoto, setLoadingUpdatePhoto] = useState(false);
   const [loadingUpdateShop, setLoadingUpdateShop] = useState(false);
-
+  const [hasChange, setHasChange] = useState(false);
   const { setShowSnackbar } = useSnackbarActions();
   const [file, setFile] = useState<File[]>([]);
   const [image, setImage] = useState("");
@@ -102,6 +102,7 @@ export default function Home({
       setImage(url as string);
     } finally {
       setLoadingUpdatePhoto(false);
+      setHasChange(true);
     }
   };
 
@@ -127,6 +128,7 @@ export default function Home({
         message: successUpdateShop,
         type: "success",
       });
+      setHasChange(false);
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const getDataError = err.response?.data as ErrorStrapi;
@@ -186,6 +188,7 @@ export default function Home({
             component="form"
             noValidate
             onSubmit={handleSubmit}
+            onChange={() => setHasChange(true)}
             sx={{ mt: 1, maxWidth: "500px" }}
           >
             <TextField
@@ -213,7 +216,7 @@ export default function Home({
               type="submit"
               fullWidth
               variant="contained"
-              disabled={loadingUpdateShop}
+              disabled={loadingUpdateShop || !hasChange}
               sx={{ mt: 3, mb: 2 }}
             >
               Save
