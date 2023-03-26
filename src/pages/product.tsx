@@ -30,6 +30,7 @@ import useAxios from "@/hooks/useAxios";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
 import SearchIcon from "@mui/icons-material/Search";
 import { useAuthStates } from "@/contexts/authContext";
+import ModalCreationProduct from "@/components/product/components/ModalCreation";
 
 interface ColumnsProps {
   onDelete: (arg: { id: number; uniqueName: string }) => void;
@@ -159,6 +160,8 @@ const Product = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingPaginate, setLoadingPaginate] = useState(false);
   const [search, setSearch] = useState("");
+  const [openCreation, setOpenCreation] = useState(false);
+  const [dataCreation, setDataCreation] = useState<Datum | null>(null);
   const [openConfirmDelete, setOpenConfirmDelete] = useState({
     show: false,
     message: "" as string | JSX.Element,
@@ -256,7 +259,10 @@ const Product = ({
     });
   };
 
-  const handleEdit = () => {};
+  const handleEdit = (arg: Datum) => {
+    setOpenCreation(true);
+    setDataCreation(arg);
+  };
 
   const handleSearch = (res: ChangeEvent<HTMLInputElement>) => {
     res.preventDefault();
@@ -377,45 +383,13 @@ const Product = ({
         </Dialog>
       </Box>
 
-      {/* <Box>
-        <Dialog
-          open={openConfirmDelete.show}
-          onClose={() =>
-            setOpenConfirmDelete((prev) => ({ ...prev, show: false }))
-          }
-          aria-labelledby="alert-dialog-delete"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-delete">
-            {openConfirmDelete.message}
-          </DialogTitle>
-
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Data barang yang terhapus akan hilang. Pastikan kembali barang
-              yang akan anda hapus.
-            </DialogContentText>
-          </DialogContent>
-
-          <DialogActions>
-            <Button
-              onClick={openConfirmDelete.onConfirm}
-              color="error"
-              variant="contained"
-            >
-              Ya
-            </Button>
-            <Button
-              onClick={() =>
-                setOpenConfirmDelete((prev) => ({ ...prev, show: false }))
-              }
-              autoFocus
-            >
-              Batalkan
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box> */}
+      {openCreation && (
+        <ModalCreationProduct
+          open={openCreation}
+          setOpen={setOpenCreation}
+          data={dataCreation}
+        />
+      )}
     </Card>
   );
 };
