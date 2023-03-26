@@ -7,6 +7,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { ChangeEvent, useRef, useState } from "react";
 import { getImage } from "@/helpers/getImage";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
+import useAxios from "@/hooks/useAxios";
 
 const styAvatar: SxProps<Theme> = {
   width: "150px",
@@ -67,6 +68,7 @@ export default function Home({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const refInput = useRef<HTMLInputElement>(null);
+  const getAxios = useAxios();
   const [loadingUpdatePhoto, setLoadingUpdatePhoto] = useState(false);
   const [loadingUpdateShop, setLoadingUpdateShop] = useState(false);
 
@@ -119,7 +121,7 @@ export default function Home({
     };
     requestForm.append("data", JSON.stringify(bodyData));
     try {
-      await axios.put(`${SHOP_API}/${data.id}`, requestForm);
+      await getAxios().put(`${SHOP_API}/${data.id}`, requestForm);
       setShowSnackbar({
         show: true,
         message: successUpdateShop,

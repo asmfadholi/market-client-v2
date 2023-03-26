@@ -65,6 +65,7 @@ interface SaveJwtResponse {
 export default function SignInSide() {
   const [loadingLogin, setLoadingLogin] = React.useState(false);
   const { refetchDetailUser } = useAuthActions();
+
   const router = useRouter();
   const { setShowSnackbar } = useSnackbarActions();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -72,10 +73,18 @@ export default function SignInSide() {
     const data = new FormData(event.currentTarget);
     setLoadingLogin(true);
     try {
-      const resLogin = await axios.post<LoginResponse>(LOGIN_API, {
-        identifier: data.get("username"),
-        password: data.get("password"),
-      });
+      const resLogin = await axios.post<LoginResponse>(
+        LOGIN_API,
+        {
+          identifier: data.get("username"),
+          password: data.get("password"),
+        },
+        {
+          headers: {
+            Authorization: undefined,
+          },
+        }
+      );
 
       const getJwt = resLogin.data.jwt;
       const getUserId = resLogin?.data?.user?.id;

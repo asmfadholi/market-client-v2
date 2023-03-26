@@ -63,15 +63,23 @@ WrapperApp.getInitialProps = async (appContext: AppContext) => {
     const { req } = ctx;
     const host = ctx.req?.headers.host;
     const httpHost = `http://${ctx.req?.headers.host}`;
+    if (!host) {
+      throw new Error("no Host");
+    }
     const resGetJwt = await axios.get<{ jwt: string }>(
-      `${host ? httpHost : ""}/api/get-jwt-cookie`,
+      `${httpHost}/api/get-jwt-cookie`,
       {
         headers: {
           cookie: req?.headers.cookie,
         },
       }
     );
+
     const getJwt = resGetJwt.data.jwt;
+
+    if (!getJwt) {
+      throw new Error("no Jwt");
+    }
 
     const resGetDetailUser = await axios.get<UserDetail>(`${USER_DETAIL_API}`, {
       headers: {

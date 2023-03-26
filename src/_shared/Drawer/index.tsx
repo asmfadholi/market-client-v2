@@ -130,9 +130,9 @@ export default function PersistentDrawerLeft({
             <Box
               key={text}
               sx={styLink}
-              className={router.pathname === "/settings" ? "active" : ""}
+              className={router.pathname === "/setting" ? "active" : ""}
             >
-              <Link href="/settings">
+              <Link href="/setting">
                 <ListItem key={text} disablePadding>
                   <ListItemButton>
                     <ListItemIcon>

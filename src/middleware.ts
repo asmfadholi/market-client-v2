@@ -7,9 +7,10 @@ export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const { pathname } = nextUrl;
   const loginPage = pathname === "/login";
+  const isHome = pathname === "/";
 
   if (loginPage) {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isHome) {
       return NextResponse.redirect(new URL("/", req.url));
     } else {
       return NextResponse.next();
@@ -24,5 +25,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/settings"],
+  matcher: ["/", "/login", "/setting"],
 };
