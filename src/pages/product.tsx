@@ -285,35 +285,47 @@ const Product = ({
       <Divider sx={{ marginBottom: "24px" }} />
 
       <Box sx={{ marginBottom: "16px" }}>
-        <TextField
-          value={search}
-          label="Cari nama barang"
-          onChange={handleSearch}
-          onKeyDown={(e) => {
-            const code = e.code;
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <TextField
+            value={search}
+            label="Cari nama barang"
+            onChange={handleSearch}
+            onKeyDown={(e) => {
+              const code = e.code;
 
-            if (code === "Enter") {
-              handlePagination({
-                ...pagination,
-                uniqueName: search,
-              });
-            }
-          }}
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                onClick={() =>
-                  handlePagination({
-                    ...pagination,
-                    uniqueName: search,
-                  })
-                }
-              >
-                <SearchIcon />
-              </IconButton>
-            ),
-          }}
-        />
+              if (code === "Enter") {
+                handlePagination({
+                  ...pagination,
+                  uniqueName: search,
+                });
+              }
+            }}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() =>
+                    handlePagination({
+                      ...pagination,
+                      uniqueName: search,
+                    })
+                  }
+                >
+                  <SearchIcon />
+                </IconButton>
+              ),
+            }}
+          />
+          <Button
+            size="large"
+            variant="contained"
+            onClick={() => {
+              setOpenCreation(true);
+              setDataCreation(null);
+            }}
+          >
+            Tambah Barang
+          </Button>
+        </Box>
       </Box>
 
       <Box sx={{ height: 500, width: "100%", overflow: "auto" }}>
@@ -334,14 +346,10 @@ const Product = ({
           }}
           pageSizeOptions={[5, 20, 40, 80]}
           disableColumnFilter
-          // quickFilterIcon={}
-          // hideFooterPagination
           disableRowSelectionOnClick
           disableDensitySelector
           paginationMode="server"
           disableColumnMenu
-          // hideFooter
-          // autoHeight
         />
       </Box>
 

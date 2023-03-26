@@ -162,6 +162,34 @@ const ModalCreationProduct = ({
     }
   };
 
+  const handleCreateProduct = async (form: FormData) => {
+    try {
+      setLoadingCreation(true);
+      await getAxios().post(`${PRODUCT_API}`, form);
+      setShowSnackbar({
+        show: true,
+        message: "Berhasil menambahkan barang",
+        type: "success",
+      });
+      setHasChange(false);
+      onSuccess();
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const getDataError = err.response?.data as {
+          error: { message: string };
+        };
+        setShowSnackbar({
+          show: true,
+          message: getDataError?.error?.message,
+          type: "error",
+        });
+      }
+    } finally {
+      setOpen(false);
+      setLoadingCreation(false);
+    }
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const dataForm = new FormData(event.currentTarget);
@@ -186,13 +214,24 @@ const ModalCreationProduct = ({
       unit: dataForm.get("unit") || "",
       stock: dataForm.get("stock") || "",
       productId: dataForm.get("productId") || "",
-      users_permissions_user: detailUser.id,
+      users_permissions_user: {
+        set: [
+          {
+            id: detailUser.id,
+            position: {
+              start: true,
+            },
+          },
+        ],
+      },
       uniqueName: `${dataForm.get("name")} - ${dataForm.get("unit")}`,
     };
     requestForm.append("data", JSON.stringify(bodyData));
 
     if (isEdit) {
       handleUpdateProduct(requestForm);
+    } else {
+      handleCreateProduct(requestForm);
     }
   };
 
