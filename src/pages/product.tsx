@@ -179,9 +179,9 @@ const Product = ({ data }: { data: ResponseProduct }) => {
     const query = QueryString.stringify(
       {
         filters: {
-          users_permissions_user: {
-            id: detailUser.id,
-          },
+          // users_permissions_user: {
+          //   id: detailUser.id,
+          // },
           uniqueName: {
             $containsi: model?.uniqueName || "",
           },
@@ -477,16 +477,16 @@ function WrapperProduct() {
           `/api/get-jwt-cookie`
         );
 
-        const userId = resGetJwt.data.userId;
+        // const userId = resGetJwt.data.userId;
         const jwt = resGetJwt.data.jwt;
 
         const query = QueryString.stringify(
           {
-            filters: {
-              users_permissions_user: {
-                id: userId,
-              },
-            },
+            // filters: {
+            //   users_permissions_user: {
+            //     id: userId,
+            //   },
+            // },
             populate: "*",
             pagination: {
               page: 1,
