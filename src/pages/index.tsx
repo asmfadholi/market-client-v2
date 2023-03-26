@@ -1,12 +1,23 @@
 import Head from "next/head";
 import * as qs from "qs";
 import Button from "@mui/material/Button";
-import { Avatar, Box, Stack, SxProps, TextField, Theme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Stack,
+  SxProps,
+  TextField,
+  Theme,
+} from "@mui/material";
 import axios from "axios";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { ChangeEvent, useRef, useState } from "react";
 import { getImage } from "@/helpers/getImage";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
+import mountainImg from "@/assets/images/mountain.jpeg";
 import useAxios from "@/hooks/useAxios";
 
 const styAvatar: SxProps<Theme> = {
@@ -152,77 +163,87 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box>
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          direction="column"
-          marginBottom="24px"
-        >
-          <Avatar
-            alt={attPhoto.name}
-            src={image || getImage(attPhoto.url)}
-            sx={styAvatar}
+        <Card>
+          <CardMedia
+            component="img"
+            alt="green iguana"
+            height="140"
+            image={mountainImg.src}
           />
-          <label htmlFor="contained-button-file">
-            <Box sx={styButtonUpload}>Change Photo</Box>
-
-            <Box fontSize={12} textAlign="center">
-              (.jpg, .jpeg, .png or .svg)
-            </Box>
-
-            <input
-              ref={refInput}
-              style={{ display: "none" }}
-              disabled={loadingUpdatePhoto}
-              onChange={handleChange}
-              accept="image/*"
-              data-testid="uploadImage"
-              id="contained-button-file"
-              multiple={false}
-              type="file"
-            />
-          </label>
-        </Stack>
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            onChange={() => setHasChange(true)}
-            sx={{ mt: 1, maxWidth: "500px" }}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="name"
-              label="Shop Name"
-              name="name"
-              defaultValue={attributes.name}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="address"
-              label="Address"
-              id="address"
-              multiline
-              defaultValue={attributes.address}
-              rows={4}
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={loadingUpdateShop || !hasChange}
-              sx={{ mt: 3, mb: 2 }}
+          <CardContent sx={{ position: "relative", top: "-101px" }}>
+            <Stack
+              justifyContent="center"
+              alignItems="center"
+              direction="column"
+              marginBottom="24px"
             >
-              Save
-            </Button>
-          </Box>
-        </Box>
+              <Avatar
+                alt={attPhoto.name}
+                src={image || getImage(attPhoto.url)}
+                sx={styAvatar}
+              />
+              <label htmlFor="contained-button-file">
+                <Box sx={styButtonUpload}>Change Photo</Box>
+
+                <Box fontSize={12} textAlign="center">
+                  (.jpg, .jpeg, .png or .svg)
+                </Box>
+
+                <input
+                  ref={refInput}
+                  style={{ display: "none" }}
+                  disabled={loadingUpdatePhoto}
+                  onChange={handleChange}
+                  accept="image/*"
+                  data-testid="uploadImage"
+                  id="contained-button-file"
+                  multiple={false}
+                  type="file"
+                />
+              </label>
+            </Stack>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Box
+                component="form"
+                noValidate
+                onSubmit={handleSubmit}
+                onChange={() => setHasChange(true)}
+                sx={{ mt: 1, maxWidth: "500px" }}
+              >
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="name"
+                  label="Shop Name"
+                  name="name"
+                  defaultValue={attributes.name}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="address"
+                  label="Address"
+                  id="address"
+                  multiline
+                  defaultValue={attributes.address}
+                  rows={4}
+                />
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  disabled={loadingUpdateShop || !hasChange}
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Save
+                </Button>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
       </Box>
     </>
   );
