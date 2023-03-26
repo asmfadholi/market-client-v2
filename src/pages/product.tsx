@@ -29,7 +29,7 @@ import { noop } from "@/helpers/noop";
 import useAxios from "@/hooks/useAxios";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
 import SearchIcon from "@mui/icons-material/Search";
-import { useAuthStates } from "@/contexts/authContext";
+
 import ModalCreationProduct from "@/components/product/components/ModalCreation";
 
 interface ColumnsProps {
@@ -156,7 +156,7 @@ const PRODUCT_API = `${process.env.NEXT_PUBLIC_BASE_URL}/products`;
 
 const Product = ({ data }: { data: ResponseProduct }) => {
   const getAxios = useAxios();
-  const { detailUser } = useAuthStates();
+
   const [rows, setRows] = useState(data.data);
   const { setShowSnackbar } = useSnackbarActions();
   const [loadingDelete, setLoadingDelete] = useState(false);
