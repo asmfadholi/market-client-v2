@@ -13,8 +13,7 @@ import {
   Theme,
 } from "@mui/material";
 import axios from "axios";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { getImage } from "@/helpers/getImage";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
 import mountainImg from "@/assets/images/mountain.jpeg";
@@ -75,9 +74,7 @@ interface ErrorStrapi {
   };
 }
 
-export default function Home({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Home({ data }: { data: ShopDetail }) {
   const refInput = useRef<HTMLInputElement>(null);
   const getAxios = useAxios();
   const [loadingUpdatePhoto, setLoadingUpdatePhoto] = useState(false);
@@ -300,53 +297,110 @@ const defaultShop = {
   },
 };
 
-export const getServerSideProps: GetServerSideProps<{
-  data: ShopDetail;
-}> = async ({ req }) => {
-  // Fetch data from external API
-  const host = req?.headers.host;
-  const httpHost = `http://${req?.headers.host}`;
-  try {
-    const resGetJwt = await axios.get<{ userId: string; jwt: string }>(
-      `${host ? httpHost : ""}/api/get-jwt-cookie`,
-      {
-        headers: {
-          cookie: req?.headers.cookie,
-        },
-      }
-    );
+export default function WrapperHome() {
+  const [shopDetail, setShopDetail] = useState<ShopDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const handleShopDetail = async () => {
+      setIsLoading(true);
+      try {
+        const resGetJwt = await axios.get<{ userId: string; jwt: string }>(
+          `/api/get-jwt-cookie`
+        );
 
-    const userId = resGetJwt.data.userId;
-    const jwt = resGetJwt.data.jwt;
+        const userId = resGetJwt.data.userId;
+        const jwt = resGetJwt.data.jwt;
 
-    const query = qs.stringify(
-      {
-        filters: {
-          users_permissions_user: {
-            id: userId,
+        const query = qs.stringify(
+          {
+            filters: {
+              users_permissions_user: {
+                id: userId,
+              },
+            },
+            populate: "*",
           },
-        },
-        populate: "*",
-      },
-      {
-        encodeValuesOnly: true,
+          {
+            encodeValuesOnly: true,
+          }
+        );
+
+        const resGetDetailUser = await axios.get<ShopResponse>(
+          `${SHOP_API}?${query}`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
+
+        const getShopDetail = resGetDetailUser.data?.data?.[0] || defaultShop;
+
+        // Pass data to the page via props
+        setShopDetail(getShopDetail);
+      } catch {
+        setShopDetail(defaultShop);
+      } finally {
+        setIsLoading(false);
       }
-    );
+    };
+    handleShopDetail();
+  }, []);
 
-    const resGetDetailUser = await axios.get<ShopResponse>(
-      `${SHOP_API}?${query}`,
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
-
-    const getShopDetail = resGetDetailUser.data?.data?.[0] || defaultShop;
-
-    // Pass data to the page via props
-    return { props: { data: getShopDetail } };
-  } catch {
-    return { props: { data: defaultShop } };
+  if (isLoading || !shopDetail) {
+    return null;
   }
-};
+
+  return <Home data={shopDetail} />;
+}
+
+// export const getServerSideProps: GetServerSideProps<{
+//   data: ShopDetail;
+// }> = async ({ req }) => {
+//   // Fetch data from external API
+//   const host = req?.headers.host;
+//   const httpHost = `http://${req?.headers.host}`;
+//   try {
+//     const resGetJwt = await axios.get<{ userId: string; jwt: string }>(
+//       `${host ? httpHost : ""}/api/get-jwt-cookie`,
+//       {
+//         headers: {
+//           cookie: req?.headers.cookie,
+//         },
+//       }
+//     );
+
+//     const userId = resGetJwt.data.userId;
+//     const jwt = resGetJwt.data.jwt;
+
+//     const query = qs.stringify(
+//       {
+//         filters: {
+//           users_permissions_user: {
+//             id: userId,
+//           },
+//         },
+//         populate: "*",
+//       },
+//       {
+//         encodeValuesOnly: true,
+//       }
+//     );
+
+//     const resGetDetailUser = await axios.get<ShopResponse>(
+//       `${SHOP_API}?${query}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${jwt}`,
+//         },
+//       }
+//     );
+
+//     const getShopDetail = resGetDetailUser.data?.data?.[0] || defaultShop;
+
+//     // Pass data to the page via props
+//     return { props: { data: getShopDetail } };
+//   } catch {
+//     return { props: { data: defaultShop } };
+//   }
+// };

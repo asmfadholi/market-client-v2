@@ -16,13 +16,13 @@ import {
   TextField,
 } from "@mui/material";
 import InventoryIcon from "@mui/icons-material/Inventory";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+
 import axios from "axios";
 import QueryString from "qs";
 import { Datum, ResponseProduct } from "@/types/product";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import { getImage } from "@/helpers/getImage";
 import { noop } from "@/helpers/noop";
@@ -154,9 +154,7 @@ const columns = ({ onDelete, onEdit }: ColumnsProps): GridColDef<Datum>[] => [
 
 const PRODUCT_API = `${process.env.NEXT_PUBLIC_BASE_URL}/products`;
 
-const Product = ({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Product = ({ data }: { data: ResponseProduct }) => {
   const getAxios = useAxios();
   const { detailUser } = useAuthStates();
   const [rows, setRows] = useState(data.data);
@@ -406,66 +404,130 @@ const Product = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps<{
-  data: ResponseProduct;
-}> = async ({ req }) => {
-  // Fetch data from external API
-  const host = req?.headers.host;
-  const httpHost = `http://${req?.headers.host}`;
-  try {
-    const resGetJwt = await axios.get<{ userId: string; jwt: string }>(
-      `${host ? httpHost : ""}/api/get-jwt-cookie`,
-      {
-        headers: {
-          cookie: req?.headers.cookie,
-        },
-      }
-    );
+// export const getServerSideProps: GetServerSideProps<{
+//   data: ResponseProduct;
+// }> = async ({ req }) => {
+//   // Fetch data from external API
+//   const host = req?.headers.host;
+//   const httpHost = `http://${req?.headers.host}`;
+//   try {
+//     const resGetJwt = await axios.get<{ userId: string; jwt: string }>(
+//       `${host ? httpHost : ""}/api/get-jwt-cookie`,
+//       {
+//         headers: {
+//           cookie: req?.headers.cookie,
+//         },
+//       }
+//     );
 
-    const userId = resGetJwt.data.userId;
-    const jwt = resGetJwt.data.jwt;
+//     const userId = resGetJwt.data.userId;
+//     const jwt = resGetJwt.data.jwt;
 
-    const query = QueryString.stringify(
-      {
-        filters: {
-          users_permissions_user: {
-            id: userId,
+//     const query = QueryString.stringify(
+//       {
+//         filters: {
+//           users_permissions_user: {
+//             id: userId,
+//           },
+//         },
+//         populate: "*",
+//         pagination: {
+//           page: 1,
+//           pageSize: 5,
+//         },
+//       },
+//       {
+//         encodeValuesOnly: true,
+//       }
+//     );
+
+//     const resGetProducts = await axios.get<ResponseProduct>(
+//       `${PRODUCT_API}?${query}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${jwt}`,
+//         },
+//       }
+//     );
+
+//     // Pass data to the page via props
+//     return { props: { data: resGetProducts.data } };
+//   } catch {
+//     return {
+//       props: {
+//         data: {
+//           data: [],
+//           meta: {
+//             pagination: { page: 1, pageSize: 25, pageCount: 1, total: 1 },
+//           },
+//         },
+//       },
+//     };
+//   }
+// };
+
+function WrapperProduct() {
+  const [products, setProducts] = useState<ResponseProduct | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const handleShopDetail = async () => {
+      setIsLoading(true);
+      try {
+        const resGetJwt = await axios.get<{ userId: string; jwt: string }>(
+          `/api/get-jwt-cookie`
+        );
+
+        const userId = resGetJwt.data.userId;
+        const jwt = resGetJwt.data.jwt;
+
+        const query = QueryString.stringify(
+          {
+            filters: {
+              users_permissions_user: {
+                id: userId,
+              },
+            },
+            populate: "*",
+            pagination: {
+              page: 1,
+              pageSize: 20,
+            },
           },
-        },
-        populate: "*",
-        pagination: {
-          page: 1,
-          pageSize: 5,
-        },
-      },
-      {
-        encodeValuesOnly: true,
-      }
-    );
+          {
+            encodeValuesOnly: true,
+          }
+        );
 
-    const resGetProducts = await axios.get<ResponseProduct>(
-      `${PRODUCT_API}?${query}`,
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
+        const resGetProducts = await axios.get<ResponseProduct>(
+          `${PRODUCT_API}?${query}`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
 
-    // Pass data to the page via props
-    return { props: { data: resGetProducts.data } };
-  } catch {
-    return {
-      props: {
-        data: {
+        // Pass data to the page via props
+        setProducts(resGetProducts.data);
+      } catch {
+        setProducts({
           data: [],
           meta: {
-            pagination: { page: 1, pageSize: 25, pageCount: 1, total: 1 },
+            pagination: { page: 1, pageSize: 20, pageCount: 1, total: 1 },
           },
-        },
-      },
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }
-};
+    handleShopDetail();
+  }, []);
 
-export default Product;
+  if (isLoading || !products) {
+    return null;
+  }
+
+  return <Product data={products} />;
+}
+
+export default WrapperProduct;

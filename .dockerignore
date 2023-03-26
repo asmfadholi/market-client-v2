@@ -1,0 +1,7 @@
+.git
+.gitlab-ci.yml
+
+*.log
+
+node_modules
+.next
