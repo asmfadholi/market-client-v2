@@ -28,11 +28,14 @@ import { getImage } from "@/helpers/getImage";
 import { useSnackbarActions } from "@/contexts/snackbarContext";
 
 import { NumericFormat, NumericFormatProps } from "react-number-format";
+import useAxios from "@/hooks/useAxios";
+import { useAuthStates } from "@/contexts/authContext";
 
 interface ModalCreationProductProps {
   data: Datum | null;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  onSuccess: () => void;
 }
 
 interface CustomProps {
@@ -109,14 +112,18 @@ const styAvatar: SxProps<Theme> = {
 const defaultErrorFormat =
   "Unsupported file format, only .jpg, .jpeg, .png or svg are supported";
 
+const PRODUCT_API = `${process.env.NEXT_PUBLIC_BASE_URL}/products`;
+
 const ModalCreationProduct = ({
   data,
   open,
   setOpen,
+  onSuccess,
 }: ModalCreationProductProps) => {
-  //   const getAxios = useAxios();
+  const getAxios = useAxios();
   const refInput = useRef<HTMLInputElement>(null);
-  //   const { detailUser } = useAuthStates();
+  const { detailUser } = useAuthStates();
+  const [loadingCreation, setLoadingCreation] = useState(false);
   const [hasChange, setHasChange] = useState(false);
   const { setShowSnackbar } = useSnackbarActions();
   const [file, setFile] = useState<File[]>([]);
@@ -127,29 +134,17 @@ const ModalCreationProduct = ({
   const attributes = data?.attributes;
   const { name, stock, price, basePrice, productId, unit } = attributes || {};
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // setLoadingShop(true);
-    const dataForm = new FormData(event.currentTarget);
-    console.log(dataForm.get("price"), "dataForm");
-    const requestForm = new FormData();
-    if (file?.[0]) {
-      requestForm.append("files.photo", file?.[0]);
-    }
-
-    const bodyData = {
-      name: dataForm.get("name") || "",
-      address: dataForm.get("address") || "",
-    };
-    requestForm.append("data", JSON.stringify(bodyData));
+  const handleUpdateProduct = async (form: FormData) => {
     try {
-      //   await getAxios().put(`${SHOP_API}/${data.id}`, requestForm);
+      setLoadingCreation(true);
+      await getAxios().put(`${PRODUCT_API}/${data?.id}`, form);
       setShowSnackbar({
         show: true,
-        message: "successUpdateShop",
+        message: "Berhasil update barang",
         type: "success",
       });
       setHasChange(false);
+      onSuccess();
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const getDataError = err.response?.data as {
@@ -162,7 +157,42 @@ const ModalCreationProduct = ({
         });
       }
     } finally {
-      //   setLoadingUpdateShop(false);
+      setOpen(false);
+      setLoadingCreation(false);
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const dataForm = new FormData(event.currentTarget);
+
+    const requestForm = new FormData();
+    if (file?.[0]) {
+      requestForm.append("files.image", file?.[0]);
+    }
+
+    const bodyData = {
+      name: dataForm.get("name") || "",
+      price: dataForm
+        .get("price")
+        ?.toString()
+        .replaceAll("Rp. ", "")
+        .replaceAll(".", ""),
+      basePrice: dataForm
+        .get("basePrice")
+        ?.toString()
+        .replaceAll("Rp. ", "")
+        .replaceAll(".", ""),
+      unit: dataForm.get("unit") || "",
+      stock: dataForm.get("stock") || "",
+      productId: dataForm.get("productId") || "",
+      users_permissions_user: detailUser.id,
+      uniqueName: `${dataForm.get("name")} - ${dataForm.get("unit")}`,
+    };
+    requestForm.append("data", JSON.stringify(bodyData));
+
+    if (isEdit) {
+      handleUpdateProduct(requestForm);
     }
   };
 
@@ -309,7 +339,11 @@ const ModalCreationProduct = ({
 
         <DialogActions>
           <Box padding="16px">
-            <Button type="submit" disabled={!hasChange} variant="contained">
+            <Button
+              type="submit"
+              disabled={!hasChange || loadingCreation}
+              variant="contained"
+            >
               Simpan
             </Button>
           </Box>

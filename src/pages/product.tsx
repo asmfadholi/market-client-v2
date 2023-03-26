@@ -133,16 +133,20 @@ const columns = ({ onDelete, onEdit }: ColumnsProps): GridColDef<Datum>[] => [
       const { id, attributes } = row;
 
       return (
-        <Stack direction="row" spacing={1}>
-          <IconButton onClick={() => onEdit(row)}>
-            <BorderColorIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => onDelete({ id, uniqueName: attributes.uniqueName })}
-          >
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Stack>
+        <Box width="100%" display="flex" justifyContent="center">
+          <Stack direction="row" spacing={1}>
+            <IconButton onClick={() => onEdit(row)}>
+              <BorderColorIcon />
+            </IconButton>
+            <IconButton
+              onClick={() =>
+                onDelete({ id, uniqueName: attributes.uniqueName })
+              }
+            >
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Stack>
+        </Box>
       );
     },
   },
@@ -174,7 +178,6 @@ const Product = ({
     page: number;
     uniqueName?: string;
   }) => {
-    console.log("berapa kalii");
     const query = QueryString.stringify(
       {
         filters: {
@@ -388,6 +391,7 @@ const Product = ({
           open={openCreation}
           setOpen={setOpenCreation}
           data={dataCreation}
+          onSuccess={() => handlePagination(pagination)}
         />
       )}
     </Card>
